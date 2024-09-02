@@ -7,7 +7,7 @@ import br.com.desafio.domain.model.PaymentModel;
 import br.com.desafio.domain.strategy.PaymentProcessorStrategy;
 import br.com.desafio.domain.usecase.ConfirmPaymentUseCase;
 import br.com.desafio.repository.SellerRepository;
-import br.com.desafio.repository.entity.InvoiveEntity;
+import br.com.desafio.repository.entity.InvoiceEntity;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
@@ -28,17 +28,17 @@ public class ConfirmPaymentUseCaseImpl implements ConfirmPaymentUseCase {
         var seller = sellerRepository.findById(paymentModel.getClientId())
                 .orElseThrow(() -> new SellerNotFoundException(paymentModel.getClientId()));
 
-        validateItems(seller.getInvoiveList(), paymentModel.getPaymentItems());
+        validateItems(seller.getInvoiceList(), paymentModel.getPaymentItems());
 
         paymentModel.setPaymentItems(
-                process(paymentModel.getPaymentItems(), seller.getInvoiveList()));
+                process(paymentModel.getPaymentItems(), seller.getInvoiceList()));
 
         return paymentModel;
     }
 
-    private List<PaymentItemModel> process(List<PaymentItemModel> paymentItems, List<InvoiveEntity> invoiveList) {
+    private List<PaymentItemModel> process(List<PaymentItemModel> paymentItems, List<InvoiceEntity> invoiceList) {
         return paymentItems.stream()
-                .map(item -> invoiveList.stream()
+                .map(item -> invoiceList.stream()
                         .filter(inv -> inv.getInvoiceId().equals(item.getPaymentId()))
                         .findFirst()
                         .map(invoice -> Pair.of(item, item.getPaymentValue().compareTo(invoice.getAmount())))
@@ -53,8 +53,8 @@ public class ConfirmPaymentUseCaseImpl implements ConfirmPaymentUseCase {
                 .toList();
     }
 
-    private void validateItems(List<InvoiveEntity> invoiveList, List<PaymentItemModel> paymentItems) {
-        var listId = invoiveList.stream().map(InvoiveEntity::getInvoiceId).toList();
+    private void validateItems(List<InvoiceEntity> invoiceList, List<PaymentItemModel> paymentItems) {
+        var listId = invoiceList.stream().map(InvoiceEntity::getInvoiceId).toList();
         var notFoundIdList = paymentItems.stream()
                 .map(payItem -> listId.contains(payItem.getPaymentId()) ? null : payItem.getPaymentId())
                 .filter(Objects::nonNull)

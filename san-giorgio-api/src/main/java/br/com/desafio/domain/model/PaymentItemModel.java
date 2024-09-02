@@ -15,6 +15,6 @@ public class PaymentItemModel {
 
     private String paymentId;
     private BigDecimal paymentValue;
-    private String paymentStatus;
+    private PaymentStatusEnum paymentStatus;
 
 }

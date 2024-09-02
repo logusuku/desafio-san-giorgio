@@ -3,9 +3,10 @@ package br.com.desafio.controller;
 import br.com.desafio.domain.exception.InvoiceNotFoundException;
 import br.com.desafio.domain.exception.SellerNotFoundException;
 import br.com.desafio.domain.exception.handler.CustomExceptionHandler;
-import br.com.desafio.domain.model.PaymentItemModel;
 import br.com.desafio.domain.model.PaymentModel;
 import br.com.desafio.domain.usecase.ConfirmPaymentUseCase;
+import br.com.desafio.mock.PaymentMock;
+import br.com.desafio.mock.PaymentModelMock;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -23,9 +24,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -42,10 +41,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestPropertySource(properties = {"server.port=8083"})
 class PaymentControllerTest {
 
-    public static final String PAYMENT_ID = "789";
-    public static final BigDecimal PAYMENT_VALUE = BigDecimal.valueOf(100);
-    public static final String PAYMENT_STATUS = "FullPayment";
-    public static final String CLIENT_ID = "123";
     public static final String TEST_ID = "1";
     public static final String PATH = "/api/payment";
 
@@ -76,8 +71,8 @@ class PaymentControllerTest {
 
     @Test
     void setPaymentSuccess() throws Exception {
-        var paymentModel = getPaymentModel();
-        var expected = getPayment();
+        var paymentModel = PaymentModelMock.create();
+        var expected = PaymentMock.create();
 
         when(confirmPaymentUseCase.confirm(any(PaymentModel.class)))
                 .thenReturn(paymentModel);
@@ -97,7 +92,7 @@ class PaymentControllerTest {
 
     @Test
     void setPaymentSellerNotFoundException() throws Exception {
-        var expected = getPayment();
+        var expected = PaymentMock.create();
 
         when(confirmPaymentUseCase.confirm(any(PaymentModel.class)))
                 .thenThrow(new SellerNotFoundException(TEST_ID));
@@ -112,7 +107,7 @@ class PaymentControllerTest {
 
     @Test
     void setPaymentInvoiceNotFoundException() throws Exception {
-        var expected = getPayment();
+        var expected = PaymentMock.create();
 
         when(confirmPaymentUseCase.confirm(any(PaymentModel.class)))
                 .thenThrow(new InvoiceNotFoundException(TEST_ID));
@@ -122,28 +117,6 @@ class PaymentControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(expected)))
                 .andExpect(status().isUnprocessableEntity());
-    }
-
-    private PaymentModel getPaymentModel() {
-        return PaymentModel.builder()
-                .clientId(CLIENT_ID)
-                .paymentItems(List.of(PaymentItemModel.builder()
-                        .paymentId(PAYMENT_ID)
-                        .paymentValue(PAYMENT_VALUE)
-                        .paymentStatus(PAYMENT_STATUS)
-                        .build()))
-                .build();
-    }
-
-    private Payment getPayment() {
-        return Payment.builder()
-                .clientId(CLIENT_ID)
-                .paymentItems(List.of(PaymentItem.builder()
-                        .paymentId(PAYMENT_ID)
-                        .paymentValue(PAYMENT_VALUE)
-                        .paymentStatus(PAYMENT_STATUS)
-                        .build()))
-                .build();
     }
 
 }

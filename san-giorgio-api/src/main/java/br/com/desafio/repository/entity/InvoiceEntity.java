@@ -19,7 +19,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Entity
 @Table(name = "invoice")
-public class InvoiveEntity implements Serializable {
+public class InvoiceEntity implements Serializable {
 
     @Id
     @NotNull

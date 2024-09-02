@@ -30,5 +30,5 @@ public class SellerEntity implements Serializable {
 
     @OneToMany
     @JoinColumn(name = "seller_id")
-    private List<InvoiveEntity> invoiveList;
+    private List<InvoiceEntity> invoiceList;
 }

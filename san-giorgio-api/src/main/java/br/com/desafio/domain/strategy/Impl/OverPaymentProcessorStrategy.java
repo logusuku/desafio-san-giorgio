@@ -1,6 +1,7 @@
 package br.com.desafio.domain.strategy.Impl;
 
 import br.com.desafio.domain.model.PaymentItemModel;
+import br.com.desafio.domain.model.PaymentStatusEnum;
 import br.com.desafio.domain.strategy.PaymentProcessorStrategy;
 import br.com.desafio.kafka.KafkaProducer;
 import br.com.desafio.utils.ConverterToJsonUtils;
@@ -23,7 +24,7 @@ public class OverPaymentProcessorStrategy implements PaymentProcessorStrategy {
 
     @Override
     public PaymentItemModel process(PaymentItemModel paymentItemModel) {
-        paymentItemModel.setPaymentStatus("OverPayment");
+        paymentItemModel.setPaymentStatus(PaymentStatusEnum.OVER_PAYMENT);
         kafkaProducer.send(kafkaTopic, ConverterToJsonUtils.toString(paymentItemModel));
         return paymentItemModel;
     }

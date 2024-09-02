@@ -1,7 +1,6 @@
 package br.com.desafio.controller;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Payment {
-    @NotBlank
+    @NotEmpty
     @JsonProperty("client_id")
     private String clientId;
     @NotEmpty
